@@ -26,7 +26,7 @@ import unittest
 
 kws_obj = GetKeywords(data_obj=None)
 
-with open('tests/test_data/2019-01-03/data/test-node-package-details-with-url.json') as f:
+with open('tests/test_data/training-utils/test-node-package-details-with-url.json') as f:
     test_data_df = pd.DataFrame(json.load(f))
 
 

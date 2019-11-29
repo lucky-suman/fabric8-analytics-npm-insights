@@ -30,7 +30,7 @@ class TestPMFRecommendation(TestCase):
         """Instantiate the resources required for the tests."""
         self.fs = LocalDataStore('tests/test_data')
         self.assertTrue(self.fs.get_name().endswith('tests/test_data'))
-        self.pmf_rec = PMFRecommendation(2, data_store=self.fs, num_latent=5)
+        self.pmf_rec = PMFRecommendation(2, data_store=self.fs, num_latent=50)
 
     def test__find_closest_user_in_training_set(self):
         """Test if we are getting correct "closest user" from the training set."""
@@ -51,14 +51,13 @@ class TestPMFRecommendation(TestCase):
     def test_predict(self):
         """Test the prediction flow."""
         # Test for a new stack.
-        missing, recommendation, ptm = self.pmf_rec.predict(["content-type"])
-        print("Missing: ", missing, "Recommendation: ", recommendation, "PTM: ", ptm)
+        missing, recommendation, ptm = self.pmf_rec.predict(["nopt"])
         self.assertFalse(missing)
         # Should have two recommendations here.
         self.assertEqual(len(recommendation), 2)
 
         # Tests for missing package.
-        missing, recommendation, _ = self.pmf_rec.predict(['pon-logger', 'missing'])
+        missing, recommendation, _ = self.pmf_rec.predict(['iferr', 'missing'])
         self.assertTrue(missing)
         # Test if still getting recommendation as no. of missing = no. of known
         self.assertGreater(len(recommendation), 0)
@@ -67,6 +66,5 @@ class TestPMFRecommendation(TestCase):
         self.assertDictEqual(package_tag_map, {})
 
         # Test for precomputed stack.
-        _, recommendation, _ = self.pmf_rec.predict(['async', 'colors', 'request',
-                                                     'underscore', 'pkginfo'])
+        _, recommendation, _ = self.pmf_rec.predict(["statuses", "debuglog", "unpipe"])
         self.assertTrue(recommendation)
