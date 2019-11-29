@@ -17,7 +17,7 @@ import recommendation_engine.config.params_training as params_training
 from recommendation_engine.autoencoder.pretrain import pretrain
 from recommendation_engine.config.path_constants import TEMPORARY_SDAE_PATH, TEMPORARY_CVAE_PATH, \
     TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_ITEM_USER_FILEPATH, TEMPORARY_PATH, \
-    TEMPORARY_MODEL_PATH, TEMPORARY_DATASTORE
+    TEMPORARY_MODEL_PATH, TEMPORARY_DATASTORE, TEMPORARY_DATA_PATH
 from recommendation_engine.utils.fileutils import check_path, load_rating
 daiquiri.setup(level=logging.DEBUG)
 from training.datastore.get_preprocess_data import GetPreprocessData
@@ -132,7 +132,8 @@ if __name__ == '__main__':
     p = TrainNetwork()
     logger.info("Preprocessing of data started.")
     p.get_preprocess_data.preprocess_data()
-    x_train = np.load(os.path.join(TEMPORARY_PATH, 'content_matrix.npy'))
+    x_train = np.load(os.path.join(TEMPORARY_DATA_PATH, 'content_matrix.npz'))
+    x_train = x_train['matrix']
     input_dim = x_train.shape[1]
     logger.info("size of training file is: ".format(len(x_train), len(x_train[0])))
     user_to_item_matrix = load_rating(TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_DATASTORE)
@@ -148,9 +149,9 @@ if __name__ == '__main__':
     logger.debug("PMF model has been initialised")
     pmf_obj(user_to_item_matrix=user_to_item_matrix,
             item_to_user_matrix=item_to_user_matrix)
-    logger.info("PMF model has been trained.")
+    logger.debug("PMF model has been trained.")
     pmf_obj.save_model()
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_DATA_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)
-
 
